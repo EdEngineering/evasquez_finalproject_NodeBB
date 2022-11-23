@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../docker-compose-vimagick.yml
+    kompose.version: 1.26.1 (a9d05d509)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: nodebb
+  name: nodebb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nodebb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ../docker-compose-vimagick.yml
+        kompose.version: 1.26.1 (a9d05d509)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: nodebb
+    spec:
+      containers:
+        - image: gcr.io/applaudo-final-project-ed/nodebb:v2.5.11
+          name: nodebb
+          ports:
+            - containerPort: 4567
+          resources: {}
+          volumeMounts:
+            - name: nodebb-claim1
+              mountPath: /usr/src/app/config
+            - name: nodebb-claim5
+              mountPath: /usr/src/app/build         
+      restartPolicy: Always
+      volumes:
+        - name: nodebb-claim1
+          persistentVolumeClaim:
+            claimName: nodebb-claim1
+        - name: nodebb-claim5
+          persistentVolumeClaim:
+            claimName: nodebb-claim5
+status: {}

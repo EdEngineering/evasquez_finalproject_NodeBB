@@ -1,20 +1,17 @@
 FROM node:lts
 
-RUN mkdir -p /usr/src/app && \
-    chown -R node:node /usr/src/app
+RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 ARG NODE_ENV
 ENV NODE_ENV $NODE_ENV
 
-COPY --chown=node:node install/package.json /usr/src/app/package.json
-
-USER node
+COPY install/package.json /usr/src/app/package.json
 
 RUN npm install --only=prod && \
     npm cache clean --force
 
-COPY --chown=node:node . /usr/src/app
+COPY . /usr/src/app
 
 ENV NODE_ENV=production \
     daemon=false \
@@ -22,4 +19,4 @@ ENV NODE_ENV=production \
 
 EXPOSE 4567
 
-CMD test -n "${SETUP}" && ./nodebb setup || node ./nodebb build; node ./nodebb start
+CMD ["./nodebb", "--config", "config/config.json", "start"]
